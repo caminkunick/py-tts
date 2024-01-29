@@ -47,7 +47,8 @@ def generate(file_path, target_path, lang):
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-target_path = config['DEFAULT']['target_path'] or ""
+target_path = config["DEFAULT"] and config['DEFAULT']['target_path'] or ""
+lang = config["DEFAULT"] and config['DEFAULT']['lang'] or "en"
 
 file_path = ""
 
@@ -71,6 +72,7 @@ button_browse.grid(column=1, row=0, padx=10, pady=10)
 
 label2 = tk.Label(window, text="Where do you want to save?")
 label2.grid(column=0, row=1, padx=10, pady=10)
+label2.config(font=("Arial", 12))
 
 def browse_target(initialdir: str):
   target = tk.filedialog.askdirectory(initialdir = initialdir or "/",title = "Select target folder")
@@ -83,7 +85,7 @@ button_browse2.grid(column=1, row=1, padx=10, pady=10)
 
 langSelect = ttk.Combobox(window, values=["en", "th"])
 langSelect.grid(column=0, row=2)
-langSelect.set("en")
+langSelect.set(lang)
 
 button = tk.Button(window, text="Convert")
 button.grid(column=0, row=3, padx=10, pady=10)
