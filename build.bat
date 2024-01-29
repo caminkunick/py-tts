@@ -1,0 +1,1 @@
+python -m pyinstaller --onefile --name=texttospeech tts.py

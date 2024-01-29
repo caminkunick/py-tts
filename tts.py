@@ -3,8 +3,9 @@ import os
 import glob
 import tkinter.filedialog
 import tkinter as tk
+import tkinter.ttk as ttk
 
-def generate(file_path, target_path):
+def generate(file_path, target_path, lang):
   if file_path == "":
     tk.messagebox.showerror("Error", "Please choose file")
     return
@@ -30,7 +31,7 @@ def generate(file_path, target_path):
     text = [x.strip() for x in text]
 
     for i in range(len(text)):
-      tts = gTTS(text=text[i], lang='en', slow=False)
+      tts = gTTS(text=text[i], lang=lang or "en", slow=False)
       tts.save(f"{target_path}/{name}_{i}.mp3")
       print(f"Convert {name}_{i} success!")
   tk.messagebox.showinfo("Success", "Convert success")
@@ -68,9 +69,13 @@ def browse_target():
 button_browse2 = tk.Button(window, text="Select Target Folder", command=browse_target)
 button_browse2.grid(column=1, row=1, padx=10, pady=10)
 
+langSelect = ttk.Combobox(window, values=["en", "th"])
+langSelect.grid(column=0, row=2)
+langSelect.set("en")
+
 button = tk.Button(window, text="Convert")
-button.grid(column=0, row=2, padx=10, pady=10)
+button.grid(column=0, row=3, padx=10, pady=10)
 button.config(width=20, height=2, font=("Arial", 12))
-button.config(command=lambda: generate(file_path, target_path))
+button.config(command=lambda: generate(file_path, target_path, langSelect.get()))
 
 window.mainloop()
