@@ -4,6 +4,7 @@ import glob
 import tkinter.filedialog
 import tkinter as tk
 import tkinter.ttk as ttk
+import configparser
 
 def generate(file_path, target_path, lang):
   if file_path == "":
@@ -19,12 +20,19 @@ def generate(file_path, target_path, lang):
     tk.messagebox.showerror("Error", "Target folder does not exist")
     return
   
+  config = configparser.ConfigParser()
+  config.read('config.ini')
+  config['DEFAULT']['target_path'] = target_path
+  config['DEFAULT']['lang'] = lang
+  with open('config.ini', 'w') as configfile:
+    config.write(configfile)
+  
   name = os.path.splitext(os.path.basename(file_path))[0]
   # files = glob.glob(f'{name}_*.mp3')
   files = glob.glob(f'{target_path}/{name}_*.mp3')
   for f in files:
     os.remove(f)
-  with open(file_path, 'r') as f:
+  with open(file_path, 'r', encoding="utf-8") as f:
     text = f.read()
     text = text.split('\n')
     text = list(filter(None, text))
@@ -36,8 +44,12 @@ def generate(file_path, target_path, lang):
       print(f"Convert {name}_{i} success!")
   tk.messagebox.showinfo("Success", "Convert success")
 
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+target_path = config['DEFAULT']['target_path'] or ""
+
 file_path = ""
-target_path = ""
 
 window = tk.Tk()
 window.title("Text to Speech")
@@ -48,25 +60,25 @@ label.grid(column=0, row=0, padx=10, pady=10)
 label.config(font=("Arial", 12))
 
 # browse file
-def browse_file():
-  file = tk.filedialog.askopenfilename(initialdir = "/",title = "Select file")
+def browse_file(initialdir: str):
+  file = tk.filedialog.askopenfilename(initialdir = initialdir or "/",title = "Select file")
   label.configure(text=file)
   global file_path
   file_path = file
 
-button_browse = tk.Button(window, text="Select File", command=browse_file)
+button_browse = tk.Button(window, text="Select File", command=lambda :browse_file(target_path))
 button_browse.grid(column=1, row=0, padx=10, pady=10)
 
 label2 = tk.Label(window, text="Where do you want to save?")
 label2.grid(column=0, row=1, padx=10, pady=10)
 
-def browse_target():
-  target = tk.filedialog.askdirectory(initialdir = "/",title = "Select target folder")
+def browse_target(initialdir: str):
+  target = tk.filedialog.askdirectory(initialdir = initialdir or "/",title = "Select target folder")
   label2.configure(text=target)
   global target_path
   target_path = target
 
-button_browse2 = tk.Button(window, text="Select Target Folder", command=browse_target)
+button_browse2 = tk.Button(window, text="Select Target Folder", command=lambda :browse_target(target_path))
 button_browse2.grid(column=1, row=1, padx=10, pady=10)
 
 langSelect = ttk.Combobox(window, values=["en", "th"])

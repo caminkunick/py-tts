@@ -6,3 +6,4 @@ venv
 
 *.spec
 workspace/*
+config.ini
